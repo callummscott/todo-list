@@ -1,45 +1,83 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900');
 
-/* * {
-  box-sizing: border-box;
-} */
-
-html {
-  background-color: #240035;
-  background-image: -webkit-linear-gradient(75deg, #240035 50%, #0d0120 50%);
+:root {
   font-family: Lexend;
 }
 
-/* -webkit-linear-gradient(65deg, #a683e3 50%, #e4e9fd 50%) */
-body {
+* {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
+}
+
+body {
   display: flex;
   flex-direction: column;
-  justify-content: stretch;
   min-height: 100vh;
   min-height: 100svh;
+  width: 100%;
+
+  background-color: #043654;
+  background-image: linear-gradient(15deg, #092e45 50%, #1772ac 50%);
 }
+
 main {
   text-align: center;
   flex: 1 0 auto;
 }
-h1 {
-  color: #fff;
-  padding: 10px;
-}
 
-.box {
-  max-width: 400px;
-  margin: 50px auto;
-  background: white;
-  border-radius: 5px;
-  box-shadow: 5px 5px 15px -5px rgba(0, 0, 0, 0.3);
+header {
+  @media (min-width: 600px) {
+    padding-block: 1rem;
+  }
+  @media (min-width: 900px) {
+    padding-block: 2rem;
+  }
 }
 
 #heading {
-  background-color: #660096;
+  background-color: #105079;
   text-align: center;
+  padding: .75rem;
+  @media (min-width: 600px) {
+    width: fit-content;
+    max-width: 80%;
+    padding: 1rem;
+  }
+  @media (min-width: 768px) {
+    max-width: 65%;
+    padding: 1.5rem;
+  }
+  @media (min-width: 900px) {
+    max-width: 50%;
+  }
 }
+#heading > h1 {
+  line-height: 1.2;
+  color: #fff;
+}
+
+.box {
+  width: 100%;
+  margin: 0 auto;
+  background: white;
+
+  box-shadow: 5px 5px 15px -5px rgba(0, 0, 0, 0.3);
+  
+  @media (min-width: 600px) {
+    width: 80%;
+    border-radius: .5rem;
+    padding: .5rem; /* Needed to get the border-radius to show */
+  }
+  @media (min-width: 768px) {
+    width: 65%;
+  }
+  @media (min-width: 900px) {
+    width: 50%;
+  }
+ }
+
+
 form.edit {
   display: flex;
 }
@@ -56,17 +94,10 @@ form.edit {
   border-bottom: 0;
 }
 
-input[type="checkbox"] {
-  margin: 20px;
-  margin-left: 0;
-  cursor: pointer;
-}
-
 p {
-  margin: 0;
   padding: 20px 0;
-  font-size: 20px;
-  color: #00204a;
+  font-size: 1.25rem;
+  color: #092e45;
 }
 
 form + p {
@@ -80,45 +111,53 @@ form {
 
 button {
   cursor: pointer;
-  padding: 0;
 }
 
 button.add {
-  min-height: 50px;
-  width: 50px;
+  min-height: 3rem;
+  width: 3rem;
+
   border-radius: 50%;
-  border-color: transparent;
-  background-color: #a683e3;
-  color: #fff;
+  border: none;
+  
   font-size: 2rem;
-  border-width: 0;
+  color: #fff;
+  background-color: #105079;
 }
 
 button.edit {
   margin-left: auto;
-  margin-right: 20px;
+  margin-right: 1rem;
   border: none;
   background: none;
 }
 
 .icon {
-  height: 20px;
+  height: 1.5rem;
+}
+
+input[type="checkbox"] {
+  margin: 1rem;
+  margin-left: 0;
+  cursor: pointer;
 }
 
 input[type="text"] {
+  font-family: Lexend;
+  font-weight: 350;
+  font-size: 1.25rem;
+  color: #092e45;
   text-align: left;
+  
   height: 60px;
-  top: 10px;
   border: none;
   background: transparent;
-  font-size: 20px;
-  font-weight: 200;
   width: 80%;
 }
 
 input[type="text"]:focus {
   outline: none;
-  box-shadow: inset 0 -3px 0 0 #a683e3;
+  box-shadow: inset 0 -3px 0 0 #1c8bd2;
 }
 
 ::placeholder {
@@ -127,7 +166,6 @@ input[type="text"]:focus {
 }
 
 footer {
-  flex: 0 0 auto;
   color: white;
   text-align: center;
   padding-block: 1rem;
