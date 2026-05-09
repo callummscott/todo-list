@@ -74,8 +74,11 @@ app.post("/add", async (req, res) => {
  * POST /edit - Changes the content of an existing to-do item.
  */
 app.post("/edit", async (req, res) => {
-  const { updatedItemId: id, updatedItemText: text } = req.body;  
-  await db.query("UPDATE items SET text=$1 WHERE id=$2;", [text, id]);
+  const { updatedItemId: id, updatedItemText: text } = req.body;
+  if (text && text.trim() !== "") {
+    await db.query("UPDATE items SET text=$1 WHERE id=$2;", [text, id]);
+  }
+  // Ideally send feedback to the user if the above condition isn't met.
   res.redirect("/");
 });
 
@@ -89,7 +92,7 @@ app.post("/delete", async (req, res) => {
 });
 
 /**
- * Global error handling.
+ * Global catchall error handling.
  */
 app.use((err, req, res, next) => {
   console.error(err);
@@ -100,4 +103,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
