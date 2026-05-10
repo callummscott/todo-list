@@ -13,38 +13,25 @@
       
       <div class="item">
 
-        <form action="/delete" method="post">
-          <input type="checkbox" onchange="this.form.submit()" name="deleteItemId" value="<%=item.id%>">
+        <form class="del-form" action="/delete" method="post" >
+          <input type="checkbox" class="item-checkbox" onchange="this.form.submit()" name="deletedId" value="<%=item.id%>">
         </form>
-        <p id="title<%=item.id%>">
-          <%=item.text%>
-        </p>
-        <form class="edit" action="/edit" method="post">
-          <input type="hidden" name="updatedItemId" value="<%=item.id%>">
-          <input id="input<%=item.id%>" type="text" name="updatedItemText" value="<%=item.text%>" autofocus hidden/>
-          <button id="done<%=item.id%>" class="edit" type="submit" hidden>
-            <img class="icon" src="/assets/icons/check-solid.svg" alt="tick image">
-          </button>
+
+        <form class="edit-form" action="/edit" method="post">
+          <input type="text" name="editedId" value="<%=item.id%>" hidden>
+          <textarea name="editedText" maxlength="100" rows="1" onsubmit="this.form.submit()"><%=item.text%></textarea>
+          <input type="submit" hidden />
         </form>
-        <button id="edit<%=item.id%>" class="edit" onclick="handler('<%=item.id%>')">
-          <img class="icon" src="/assets/icons/pencil-solid.svg" alt="pencil image">
-        </button>
+        
       </div>
   
     <% } %>
   
-    <form class="item" action="/add" method="post">
-      <input type="text" name="newItem" placeholder="New Item" autofocus maxlength="100"/>
-      <button class="add" type="submit">+</button>
+    <form id="add-form" class="item" action="/add" method="post">
+      <input type="text" name="newItem" placeholder="New Item" maxlength="100" tabindex="1"/>
+      <button class="add" type="submit" tabindex="2">+</button>
     </form>
   </div>
 </main>
 <%- include('partials/footer.ejs'); -%>
-<script>
-  function handler(id) {
-    document.getElementById("title" + id).setAttribute("hidden", "");
-    document.getElementById("edit" + id).setAttribute("hidden", "");
-    document.getElementById("done" + id).removeAttribute("hidden");
-    document.getElementById("input" + id).removeAttribute("hidden");
-  }
-</script>
+<script src="/js/script.js" ></script>

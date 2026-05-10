@@ -74,7 +74,7 @@ app.post("/add", async (req, res) => {
  * POST /edit - Changes the content of an existing to-do item.
  */
 app.post("/edit", async (req, res) => {
-  const { updatedItemId: id, updatedItemText: text } = req.body;
+  const { editedId: id, editedText: text } = req.body;
   if (text && text.trim() !== "") {
     await db.query("UPDATE items SET text=$1 WHERE id=$2;", [text, id]);
   }
@@ -86,7 +86,7 @@ app.post("/edit", async (req, res) => {
  * POST /delete - Deletes an existing to-do item by its ID.
  */
 app.post("/delete", async (req, res) => {
-  const { deleteItemId: id } = req.body;
+  const { deletedId: id } = req.body;
   await db.query("DELETE FROM items WHERE id=$1;", [id]);
   res.redirect("/");
 });
