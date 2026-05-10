@@ -9,28 +9,35 @@ window.onbeforeunload = function(e) {
     sessionStorage.setItem('scrollpos', window.scrollY);
 };
 
-/* 
-Adds '`Enter` to submit' and '`Esc` to cancel` functionality 
-*/
-const textareas = document.querySelectorAll('textarea');
-textareas.forEach(element => {
+
+/* Adds `Esc` to cancel and `Enter` to submit functionality. */
+document.querySelectorAll('textarea').forEach(element => {
+  let originalText = "";
   element.addEventListener('keydown', (e) => {
     switch (e.key) {
+      // Prevent newlines and submit edited text.
       case "Enter":
         e.preventDefault();
-        element.onsubmit();
+        element.closest('form').requestSubmit();
         break;
+      // Cancel any changes to the text content
       case "Escape":
-        document.activeElement.blur();
+        document.activeElement.blur(); 
+        // this triggers the `blur` event listener, resetting the text.
         break;
     }
   });
-
-  let originalText = null;  /* Should I do something with `null`? */
   element.addEventListener('focus', () => {
     originalText = element.value;
   });
   element.addEventListener('blur', () => {
     element.value = originalText;
   })
+});
+
+/* Delete item checkbox form submission */
+document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+  checkbox.addEventListener('change', () => {
+    checkbox.closest('form').requestSubmit();
+  });
 });

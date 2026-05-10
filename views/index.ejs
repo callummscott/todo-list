@@ -14,12 +14,12 @@
       <div class="item">
 
         <form class="del-form" action="/delete" method="post" >
-          <input type="checkbox" class="item-checkbox" onchange="this.form.submit()" name="deletedId" value="<%=item.id%>">
+          <input type="checkbox" class="item-checkbox" name="deletedId" value="<%=item.id%>">
         </form>
 
         <form class="edit-form" action="/edit" method="post">
           <input type="text" name="editedId" value="<%=item.id%>" hidden>
-          <textarea name="editedText" maxlength="100" rows="1" onsubmit="this.form.submit()"><%=item.text%></textarea>
+          <textarea name="editedText" maxlength="100" rows="1"><%=item.text%></textarea>
           <input type="submit" hidden />
         </form>
         
