@@ -63,7 +63,9 @@ app.post("/add", async (req, res) => {
 
   // Skip trying to submit empty strings.
   if (!text || text.trim() === "") {
+    console.error("ERROR: User tried submitting an empty string.");
     res.redirect("/");
+    return;
   }
 
   await db.query("INSERT INTO items (text) VALUES ($1);", [text]);
@@ -75,10 +77,18 @@ app.post("/add", async (req, res) => {
  */
 app.post("/edit", async (req, res) => {
   const { editedId: id, editedText: text } = req.body;
-  if (text && text.trim() !== "") {
-    await db.query("UPDATE items SET text=$1 WHERE id=$2;", [text, id]);
-  }
-  // Ideally send feedback to the user if the above condition isn't met.
+  if (!text || text.trim() === "") {
+    console.error("ERROR: User-edited text was empty.");
+    res.redirect("/");
+    return;
+  };
+  if (text.length > 100) {
+    console.error("ERROR: User-submitted text was too long.");
+    res.redirect("/");
+    return;
+  };
+  // Ideally send feedback to the user if the above conditions aren't met.
+  await db.query("UPDATE items SET text=$1 WHERE id=$2;", [text, id]);
   res.redirect("/");
 });
 
