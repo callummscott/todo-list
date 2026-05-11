@@ -2,40 +2,42 @@
 <header>
   <div id="title-container">
     <h1>
-      Stuff to do:
+      Things to do:
     </h1>
   </div>
 </header>
 <main>
-  <div class="item-container">
+  <ul class="item-list">
     <!-- Enumerates the 'todo' items in the list -->
     <% for(let item of listItems) { %>
       
-      <div class="item">
+    <li class="item">
 
-        <div class="item-content">
-          <form class="del-form" action="/delete" method="post" >
-            <input type="checkbox" class="del-checkbox" name="deletedId" value="<%=item.id%>">
-          </form>
-  
-          <form class="edit-form" action="/edit" method="post">
-            <input type="text" name="editedId" value="<%=item.id%>" hidden>
-            <textarea name="editedText" rows="1" maxlength="100"><%=item.text%></textarea>
-            <input type="submit" hidden />
-          </form>
-        </div>
+      <div class="item-content">
+        <form class="del-form" action="/delete" method="post" >
+          <input type="checkbox" class="del-checkbox" name="deletedId" aria-label="delete item" value="<%=item.id%>">
+        </form>
 
-        <!-- <div class="item-error" hidden >TODO: handle error</div> -->
+        <form class="edit-form" action="/edit" method="post">
+          <input type="text" name="editedId" value="<%=item.id%>" hidden>
+          <textarea name="editedText" rows="1" maxlength="100" aria-label="edit item"><%=item.text%></textarea>
+          <input type="submit" hidden />
+        </form>
       </div>
+
+      <!-- <div class="item-error" hidden >TODO: handle error</div> -->
+    </li>
   
     <% } %>
   
-    <form id="add-form" class="item" action="/add" method="post">
-      <input type="text" name="newItem" placeholder="New Item" maxlength="100" tabindex="1"/>
-      <button id="add-button" type="submit" tabindex="2">+</button>
-    </form>
+    <li>
+      <form id="add-form" class="item" action="/add" method="post">
+        <input type="text" name="newItem" placeholder="New Item" maxlength="100" tabindex="1" aria-label="write your new item here"/>
+        <button id="add-button" type="submit" tabindex="2" aria-label="submit new item">+</button>
+      </form>
+    </li>
     <!-- <div class="error">Error message again.</div> -->
-  </div>
+  </ul>
 </main>
 <%- include('partials/footer.ejs'); -%>
 <script src="/js/script.js" ></script>

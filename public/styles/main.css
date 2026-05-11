@@ -61,7 +61,7 @@ header {
   }
 }
 
-.item-container {
+.item-list {
   width: 100%;
   margin: 0 auto;
   background: white;
@@ -80,10 +80,10 @@ header {
   }
  }
 
-
 .item {
   padding: .2rem;
   border-bottom: 1px solid #f1f1f1;
+  list-style: none;
   
   &:last-child {
     border-bottom: 0;
