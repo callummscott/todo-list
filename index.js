@@ -24,12 +24,12 @@ function logRequests(req, res, next) {
 }
 
 
-checkEnvVariables();
-
 // Initialize Express app and PostgreSQL client
 const app = express();
 const PORT = process.env.PORT || 3000;
-const db = new pg.Client({
+
+checkEnvVariables();
+const db = new pg.Pool({
   user:      process.env.DB_USER,
   host:      process.env.DB_HOST,
   database:  process.env.DB_NAME,
