@@ -11,12 +11,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
 window.onbeforeunload = (e) => sessionStorage.setItem('scrollpos', window.scrollY);
 
 
-/*
-The functions below help prevent new anonymous functions being created
-for every single `<textarea>` element during the `textareas.forEach(...)`
-iteration — that's why they're a bit janky.
-*/
-
 document.querySelectorAll('textarea').forEach(element => {
   let originalText = "";
   let length = element.value.length;

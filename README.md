@@ -1,10 +1,10 @@
-# Todo list
+# To-do list
 
-> Create, edit and save a list of things to-do!
+> Create, edit and save a list of things to do!
 
-<img src="docs/todo-list.png" width="64%"/>
+<img src="docs/todo-list.png" width="64%" alt="screenshot of the to-do list interface"/>
 
-Runs a to-do list on an *express* server, saving items to and updating a PostgreSQL database, and displays list items in a web interface with EJS
+A simple to-do list app built with Express, EJS, and PostegreSQL.
 
 ## Getting Started
 
@@ -31,7 +31,7 @@ If you're not familiar with PostgreSQL, here's some more guidance:
      text VARCHAR(100) NOT NULL
    );
    ```
-   Alternatively, paste the contents of `queries.sql` into the query tool and execute it
+   This command is also found in `queries.sql`. Paste it into the query tool, and execute it
 6. Create a `.env` file in the project root based on `.env.example`, filling in your database credentials and desired port
 7. Install dependencies with `npm install`, then start the server with `npm start`
 8. Visit `localhost:<PORT>` in your browser (where `<PORT>` matches the value you set in `.env`)
@@ -39,10 +39,10 @@ If you're not familiar with PostgreSQL, here's some more guidance:
 
 ## How to use
 
-Type in your entries, and then: 
+- Add new items in the input field at the bottom
+- Check the checkbox to mark an item as complete
+- Click the text to edit it
+- Changes are saved upon `Enter`, or whenever you change focus
+- Press `Esc` to cancel any changes you've made
 
-- Press `Enter`, or click the `+` button, to submit them
-- Click the pen to edit your entry
-- Click the box on the left of an entry to delete it
-
-That's it!
+And that's all there is to it! Have fun keeping track of your notes in your own personal database :) — `Callum`
