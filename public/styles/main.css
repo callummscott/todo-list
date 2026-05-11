@@ -17,7 +17,7 @@ body {
   min-height: 100svh;
 
   background-color: #043654;
-  background-image: linear-gradient(15deg, #092e45 50%, #1772ac 50%);
+  background-image: linear-gradient(20deg, #092e45 50%, #1772ac 50%);
 }
 
 main {
@@ -67,6 +67,10 @@ header {
   background: white;
   box-shadow: .5rem .5rem 1rem -.5rem rgba(0, 0, 0, 0.5);
   
+  & li {
+    list-style: none;
+  }
+
   @media (min-width: 600px) {
     width: 80%;
     border-radius: .5rem;
@@ -83,7 +87,6 @@ header {
 .item {
   padding: .2rem;
   border-bottom: 1px solid #f1f1f1;
-  list-style: none;
   
   &:last-child {
     border-bottom: 0;
@@ -93,6 +96,14 @@ header {
 .item-content {
   display: flex;
   align-items: center;
+}
+
+.char-count {
+  position: relative;
+  height: 0;
+  top: -1rem;
+  font-size: 0.9rem;
+  text-align: right;
 }
 
 .del-checkbox {
@@ -150,7 +161,6 @@ textarea {
   font-weight: 350;
   font-size: 1.25rem;
   color: #092e45;
-  text-align: left;
   
   height: 4rem;
   border: none;

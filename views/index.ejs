@@ -14,17 +14,17 @@
     <li class="item">
 
       <div class="item-content">
-        <form class="del-form" action="/delete" method="post" >
-          <input type="checkbox" class="del-checkbox" name="deletedId" aria-label="delete item" value="<%=item.id%>">
+        <form class="del-form" action="/delete" method="post">
+          <input type="checkbox" class="del-checkbox" name="deletedId" aria-label="delete item" value="<%=item.id%>"/>
         </form>
 
         <form class="edit-form" action="/edit" method="post">
-          <input type="text" name="editedId" value="<%=item.id%>" hidden>
+          <input type="text" name="editedId" value="<%=item.id%>" hidden/>
           <textarea name="editedText" rows="1" maxlength="100" aria-label="edit item"><%=item.text%></textarea>
-          <input type="submit" hidden />
+          <input type="submit" hidden/>
         </form>
       </div>
-
+      <div class="char-count" hidden></div>
       <!-- <div class="item-error" hidden >TODO: handle error</div> -->
     </li>
   

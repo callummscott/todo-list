@@ -9,17 +9,13 @@ function checkEnvVariables() {
   if (missingVars.length === 0) { return; }
   
   console.error(`Error: Missing required environment variables: ${missingVars.join(', ')}`);
-  missingVars.forEach(varName => {
-    console.error(`  - ${varName}`);
-  });
+  missingVars.forEach(varName => console.error(`  - ${varName}`));
   process.exit(1);
 }
 
 function logRequests(req, res, next) {
   console.log(`${req.method}  "${req.url}"`);
-  if (req.method === 'POST') {
-    console.log(`  Body: ${JSON.stringify(req.body)}`);
-  }
+  if (req.method === 'POST') console.log(`  Body: ${JSON.stringify(req.body)}`);
   next();
 }
 

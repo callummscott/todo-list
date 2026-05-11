@@ -19,7 +19,9 @@ iteration — that's why they're a bit janky.
 
 document.querySelectorAll('textarea').forEach(element => {
   let originalText = "";
+  let length = element.value.length;
   const textHasChanged = () => element.value !== originalText;
+  const charCountDiv = element.closest('.item').querySelector('.char-count');
   
   /* Adds `Esc` to cancel and `Enter` to submit functionality. */
   element.addEventListener('keydown', e => {
@@ -41,9 +43,18 @@ document.querySelectorAll('textarea').forEach(element => {
     }
   });
 
-  element.addEventListener('focus', () => originalText = element.value);
+  element.addEventListener('focus', () => {
+    originalText = element.value;
+    charCountDiv.removeAttribute("hidden");
+    charCountDiv.innerHTML = `${length}/100`
+  });
   element.addEventListener('blur', () => {
     if (textHasChanged()) element.closest('form').requestSubmit();
+    charCountDiv.setAttribute("hidden", "");
+  });
+  element.addEventListener('input', () => {
+    length = element.value.length;
+    charCountDiv.innerHTML = `${length}/100`;
   });
 });
 
@@ -52,3 +63,4 @@ document.querySelectorAll('textarea').forEach(element => {
 document.querySelectorAll('.del-checkbox').forEach(checkbox => {
   checkbox.addEventListener('change', () => checkbox.closest('form').requestSubmit());
 });
+
