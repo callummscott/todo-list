@@ -33,14 +33,15 @@ const db = new pg.Pool({
   port:      process.env.DB_PORT
 })
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
-if (process.env.LOGGING == 'true') { app.use(logRequests); }
-    
+
 db.connect().catch(err => {
   console.error("Failed to connect to the database:", err);
   process.exit(1);
 });
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+if (process.env.LOGGING == 'true') { app.use(logRequests); }
 
 
 /**
