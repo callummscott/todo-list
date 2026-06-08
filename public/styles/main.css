@@ -100,6 +100,7 @@ header {
 
 .char-count {
   position: relative;
+  color: grey;
   height: 0;
   top: -1rem;
   font-size: 0.9rem;
@@ -197,4 +198,12 @@ footer {
   color: white;
   text-align: center;
   padding-block: 1rem;
+}
+
+a:link {
+  color: white;
+  text-decoration: none;
+}
+a:visited {
+  color: white;
 }
