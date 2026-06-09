@@ -4,7 +4,7 @@
 
 <img src="docs/todo-list.png" width="64%" alt="screenshot of the to-do list interface"/>
 
-A simple to-do list app built with Express, EJS, and PostegreSQL.
+A simple RESTful to-do list app built with Express and PostegreSQL.
 
 ## Getting Started
 
@@ -41,7 +41,7 @@ If you're not familiar with PostgreSQL, here's some more guidance:
 
 - Add new items in the input field at the bottom
 - Check the checkbox to mark an item as complete
-- Click the text to edit it
+- Click the text to start editing it
 - Changes are saved upon `Enter`, or whenever you change focus
 - Press `Esc` to cancel any changes you've made
 
