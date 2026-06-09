@@ -61,7 +61,7 @@ header {
   }
 }
 
-.item-list {
+#item-list {
   width: 100%;
   margin: 0 auto;
   background: white;
@@ -149,13 +149,13 @@ textarea {
   opacity: 1;
 }
 
-#add-form {
+#add-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-#add-form input[type="text"] {
+#add-item input[type="text"] {
   flex-grow: 1; /* Extends input horizontally. */
   margin-inline: 1rem;
   font-family: Lexend;
@@ -174,7 +174,7 @@ textarea {
   }
 }
 
-#add-button {
+#add-item button {
   flex-basis: 1;
   cursor: pointer;
   margin-inline: .5rem;

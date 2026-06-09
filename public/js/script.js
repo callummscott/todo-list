@@ -11,50 +11,141 @@ document.addEventListener("DOMContentLoaded", (event) => {
 window.onbeforeunload = (e) => sessionStorage.setItem('scrollpos', window.scrollY);
 
 
-document.querySelectorAll('textarea').forEach(element => {
-  let originalText = "";
-  let length = element.value.length;
-  const textHasChanged = () => element.value !== originalText;
-  const charCountDiv = element.closest('.item').querySelector('.char-count');
-  
-  /* Adds `Esc` to cancel and `Enter` to submit functionality. */
-  element.addEventListener('keydown', e => {
+const list = document.getElementById("item-list");
+const addItemLi = document.getElementById('add-item');
+const addItemBtn = addItemLi.querySelector('button');
+const addItemInput = addItemLi.querySelector('input');
+
+async function addNewItem () {
+  const inputText = addItemInput.value.trim();
+  if (!inputText) {
+    addItemInput.value = "";
+    return;
+  }
+  const res = await fetch('/api/items', {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text: inputText })
+  });
+  const newItem = await res.json();
+  const newLi = createTodoItem(newItem);
+  list.insertBefore(newLi, addItemLi);
+  addItemInput.value = "";
+}
+
+// add-item input KEYDOWN event listener
+addItemInput.addEventListener('keydown', async e => {
+  if (e.key === 'Enter') await addNewItem();
+});
+
+// add-item button CLICK event listener
+addItemBtn.addEventListener('click', async e => {
+  await addNewItem();
+});
+
+function createTodoItem(item) {
+  // Construct a new list item
+  const li = document.createElement('li');
+  li.innerHTML = `
+    <div class="item-content">
+      <input type="checkbox" class="del-checkbox" aria-label="delete item"/>
+    </div>
+    <div class="char-count" hidden></div>
+  `
+  const textarea = document.createElement('textarea');
+  textarea.rows = 1;
+  textarea.maxLength = 100;
+  textarea.setAttribute('aria-label', 'edit item');
+  textarea.value = item.text;
+
+  li.querySelector('.item-content').append(textarea);
+
+
+  const checkbox = li.querySelector('.del-checkbox');
+  // checkbox CHANGE event listener
+  checkbox.addEventListener('change', async e => {
+    try {
+      await fetch(`/api/items/${item.id}`, { method: "DELETE" });
+      li.remove();
+    } catch (err) {
+
+    }
+  });
+
+  const charCount = li.querySelector('.char-count');
+  let cachedText;  // Needed for 'Esc`-to-cancel functionality
+  const getCharCount = () => textarea.value.length;
+
+  // textarea KEYDOWN event listener
+  textarea.addEventListener('keydown', e => {
     switch (e.key) {
-      // Prevent newlines and submit edited text.
+      // Prevent newlines
       case "Enter":
         e.preventDefault();
-        if (textHasChanged()) {
-          element.closest('form').requestSubmit();
-          break;
-        }
         document.activeElement.blur();
         break;
       // Cancel any changes to the text content
       case "Escape":
-        element.value = originalText;
+        textarea.textContent = cachedText;
         document.activeElement.blur();
         break;
     }
   });
 
-  element.addEventListener('focus', () => {
-    originalText = element.value;
-    charCountDiv.removeAttribute("hidden");
-    charCountDiv.innerHTML = `${length}/100`
+  // textarea FOCUS event listener
+  textarea.addEventListener('focus', () => {
+    cachedText = textarea.value;
+    charCount.removeAttribute("hidden");
+    charCount.innerHTML = `${getCharCount()}/100`;
   });
-  element.addEventListener('blur', () => {
-    if (textHasChanged()) element.closest('form').requestSubmit();
-    charCountDiv.setAttribute("hidden", "");
-  });
-  element.addEventListener('input', () => {
-    length = element.value.length;
-    charCountDiv.innerHTML = `${length}/100`;
-  });
-});
 
-/* Delete-item checkbox form submission */
-//  > Replaces `this.form.submit()` in the HTML.
-document.querySelectorAll('.del-checkbox').forEach(checkbox => {
-  checkbox.addEventListener('change', () => checkbox.closest('form').requestSubmit());
-});
+  // textarea BLUR event listener
+  textarea.addEventListener('blur', async () => {
+    const finalText = textarea.value.trim();
+    charCount.setAttribute("hidden", "");
 
+    if (!finalText || finalText === cachedText) {
+      textarea.value = cachedText;
+      cachedText = undefined;
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/items/${item.id}`, {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: finalText })
+      });
+      if (!res.ok) {
+        const { error: msg } = await res.json();
+        console.error(msg);
+        textarea.value = cachedText;
+      }
+    } catch (err) {
+      console.error("Error while updating item:", err);
+      textarea.value = cachedText;
+    } finally {
+      cachedText = undefined;
+    }
+  });
+
+  // textarea INPUT event listener
+  textarea.addEventListener('input', () => {
+    charCount.innerHTML = `${getCharCount()}/100`;
+  });
+
+  return li;
+}
+
+
+async function loadItems() {
+  const res = await fetch("/api/items", { method: "GET" });
+  const items = await res.json();
+
+  items.forEach(item => {
+    const li = createTodoItem(item);
+    list.insertBefore(li, addItemLi);
+  });
+}
+
+loadItems();

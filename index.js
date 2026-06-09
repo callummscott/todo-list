@@ -41,69 +41,66 @@ db.connect().catch(err => {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(express.json());
 if (process.env.LOGGING == 'true') { app.use(logRequests); }
 
 
-/**
- * GET / - Renders the main page with all to-do list items.
- */
-app.get("/", async (req, res) => {
+app.get("/api/items", async (req, res) => {
   const { rows: items } = await db.query("SELECT * FROM items ORDER BY id ASC;");
-  res.render("index.ejs", { listItems: items })
+
+  return res.status(200).json(items);
 });
 
-/**
- * POST /add - Adds a new to-do item to the list.
- */
-app.post("/add", async (req, res) => {
-  const { newItem: text } = req.body;
+
+app.post("/api/items", async (req, res) => {
+  const { text } = req.body;
 
   // Skip trying to submit empty strings.
   if (!text || text.trim() === "") {
-    console.error("ERROR: User tried submitting an empty string.");
-    res.redirect("/");
-    return;
+    return res.status(400).json({ error: "Text cannot be empty" });
   }
-
-  await db.query("INSERT INTO items (text) VALUES ($1);", [text]);
-  res.redirect("/");
+  const { rows } = await db.query("INSERT INTO items (text) VALUES ($1) RETURNING *;", [text]);
+  
+  return res.status(201).json(rows[0]); // New resource created.
 });
 
-/**
- * POST /edit - Changes the content of an existing to-do item.
- */
-app.post("/edit", async (req, res) => {
-  const { editedId: id, editedText: text } = req.body;
+
+app.put("/api/items/:id", async (req, res, next) => {
+  const { id } = req.params;
+  const { text } = req.body;
+
   if (!text || text.trim() === "") {
-    console.error("ERROR: User-edited text was empty.");
-    res.redirect("/");
-    return;
+    return res.status(400).json({ error: "Text cannot be empty" });
   };
   if (text.length > 100) {
-    console.error("ERROR: User-submitted text was too long.");
-    res.redirect("/");
-    return;
+    return res.status(400).json({ error: "Text cannot exceed 100 characters" });
   };
   // Ideally send feedback to the user if the above conditions aren't met.
   await db.query("UPDATE items SET text=$1 WHERE id=$2;", [text, id]);
-  res.redirect("/");
+
+  res.sendStatus(200); // Resource successfully updated.
 });
 
-/**
- * POST /delete - Deletes an existing to-do item by its ID.
- */
-app.post("/delete", async (req, res) => {
-  const { deletedId: id } = req.body;
-  await db.query("DELETE FROM items WHERE id=$1;", [id]);
-  res.redirect("/");
+
+app.delete("/api/items/:id", async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    await db.query("DELETE FROM items WHERE id=$1;", [id]);
+    res.sendStatus(200); // Resource successfully deleted.
+  } catch (err) {
+    next(err);
+  }
 });
+
 
 /**
  * Global catchall error handling.
  */
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).send("Internal Server Error");
+  const status = err.status || 500;
+  res.status(status).json({
+    error: err.message || 'Internal Server Error'
+  });
 });
 
 
