@@ -207,3 +207,10 @@ a:link {
 a:visited {
   color: white;
 }
+
+#error-message {
+  position: absolute;
+  color: red;
+  bottom: 1rem;
+  right: 1rem;
+}

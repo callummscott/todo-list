@@ -18,19 +18,32 @@ const addItemInput = addItemLi.querySelector('input');
 
 async function addNewItem () {
   const inputText = addItemInput.value.trim();
+  
   if (!inputText) {
     addItemInput.value = "";
     return;
   }
-  const res = await fetch('/api/items', {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text: inputText })
-  });
-  const newItem = await res.json();
-  const newLi = createTodoItem(newItem);
-  list.insertBefore(newLi, addItemLi);
-  addItemInput.value = "";
+
+  try {
+    const res = await fetch('/api/items', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: inputText })
+    });
+  
+    if (!res.ok) {
+      const { error } = await res.json();
+      showError(error);
+      return;
+    }
+    
+    const newItem = await res.json();
+    const newLi = createTodoItem(newItem);
+    list.insertBefore(newLi, addItemLi);
+    addItemInput.value = "";
+  } catch (err) {
+    showError("Something went wrong, please try again");
+  }
 }
 
 // add-item input KEYDOWN event listener
@@ -43,9 +56,11 @@ addItemBtn.addEventListener('click', async e => {
   await addNewItem();
 });
 
+
 function createTodoItem(item) {
   // Construct a new list item
   const li = document.createElement('li');
+  li.className = 'item';
   li.innerHTML = `
     <div class="item-content">
       <input type="checkbox" class="del-checkbox" aria-label="delete item"/>
@@ -62,13 +77,21 @@ function createTodoItem(item) {
 
 
   const checkbox = li.querySelector('.del-checkbox');
+
   // checkbox CHANGE event listener
   checkbox.addEventListener('change', async e => {
     try {
-      await fetch(`/api/items/${item.id}`, { method: "DELETE" });
+      const res = await fetch(`/api/items/${item.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const { error } = await res.json();
+        showError(error);
+        checkbox.checked = false;
+        return;
+      }
       li.remove();
     } catch (err) {
-
+      checkbox.checked = false;
+      showError('Something went wrong, please try again');
     }
   });
 
@@ -86,7 +109,7 @@ function createTodoItem(item) {
         break;
       // Cancel any changes to the text content
       case "Escape":
-        textarea.textContent = cachedText;
+        textarea.value = cachedText;
         document.activeElement.blur();
         break;
     }
@@ -116,17 +139,17 @@ function createTodoItem(item) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: finalText })
       });
+  
       if (!res.ok) {
-        const { error: msg } = await res.json();
-        console.error(msg);
         textarea.value = cachedText;
+        const { error } = await res.json();
+        showError(error);
       }
     } catch (err) {
-      console.error("Error while updating item:", err);
-      textarea.value = cachedText;
-    } finally {
-      cachedText = undefined;
+      showError("Something went wrong, please try again");
     }
+
+    cachedText = undefined;
   });
 
   // textarea INPUT event listener
@@ -137,15 +160,35 @@ function createTodoItem(item) {
   return li;
 }
 
+function showError(message) {
+  const errorDiv = document.getElementById('error-message');
+  errorDiv.removeAttribute('hidden');
+  errorDiv.textContent = message;
 
+  setTimeout(() => {
+    errorDiv.setAttribute('hidden', '');
+  }, 3000);
+}
+ 
 async function loadItems() {
-  const res = await fetch("/api/items", { method: "GET" });
-  const items = await res.json();
-
-  items.forEach(item => {
-    const li = createTodoItem(item);
-    list.insertBefore(li, addItemLi);
-  });
+  try {
+    const res = await fetch("/api/items", { method: "GET" });
+  
+    if (!res.ok) {
+      const { error } = await res.json();
+      showError(error);
+      return;
+    }
+  
+    const items = await res.json();
+  
+    items.forEach(item => {
+      const li = createTodoItem(item);
+      list.insertBefore(li, addItemLi);
+    });
+  } catch (err) {
+    showError("Something went wrong, please try again");
+  }
 }
 
 loadItems();

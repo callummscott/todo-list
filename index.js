@@ -25,19 +25,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 checkEnvVariables();
-const db = new pg.Pool({
+const pool = new pg.Pool({
   user:      process.env.DB_USER,
   host:      process.env.DB_HOST,
   database:  process.env.DB_NAME,
   password:  process.env.DB_PASSWORD,
   port:      process.env.DB_PORT
-})
-
-
-db.connect().catch(err => {
-  console.error("Failed to connect to the database:", err);
-  process.exit(1);
 });
+
+
+try {
+  await pool.query('SELECT 1;');
+  console.log("Database connected");
+} catch (err) {
+  console.error("Database connection failed", err);
+  process.exit(1);
+}
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -45,48 +48,67 @@ app.use(express.json());
 if (process.env.LOGGING == 'true') { app.use(logRequests); }
 
 
-app.get("/api/items", async (req, res) => {
-  const { rows: items } = await db.query("SELECT * FROM items ORDER BY id ASC;");
-
-  return res.status(200).json(items);
+app.get("/api/items", async (req, res, next) => {
+  try {
+    const { rows: items } = await pool.query("SELECT * FROM items ORDER BY id ASC;");
+    res.json(items);
+  } catch (err) {
+    next(err);
+  }
 });
 
 
-app.post("/api/items", async (req, res) => {
+app.post("/api/items", async (req, res, next) => {
   const { text } = req.body;
 
-  // Skip trying to submit empty strings.
-  if (!text || text.trim() === "") {
-    return res.status(400).json({ error: "Text cannot be empty" });
+  if (!text || text.trim() === "") return res.status(400).json({ error: "Item text cannot be empty" });
+  if (text.length > 100) return res.status(400).json({ error: "Item text cannot exceed 100 characters" });
+
+  try {
+    const { rows } = await pool.query("INSERT INTO items (text) VALUES ($1) RETURNING *;", [text]);
+    res.status(201).json(rows[0]); // New resource created.
+  } catch (err) {
+    next(err);
   }
-  const { rows } = await db.query("INSERT INTO items (text) VALUES ($1) RETURNING *;", [text]);
-  
-  return res.status(201).json(rows[0]); // New resource created.
 });
 
 
 app.put("/api/items/:id", async (req, res, next) => {
-  const { id } = req.params;
+  const id = parseInt(req.params.id, 10);
   const { text } = req.body;
 
-  if (!text || text.trim() === "") {
-    return res.status(400).json({ error: "Text cannot be empty" });
-  };
-  if (text.length > 100) {
-    return res.status(400).json({ error: "Text cannot exceed 100 characters" });
-  };
-  // Ideally send feedback to the user if the above conditions aren't met.
-  await db.query("UPDATE items SET text=$1 WHERE id=$2;", [text, id]);
+  if (isNaN(id)) return res.status(400).json({ error: "Invalid item ID" });
 
-  res.sendStatus(200); // Resource successfully updated.
+  if (!text || text.trim() === "") return res.status(400).json({ error: "Item text cannot be empty" });
+  if (text.length > 100) return res.status(400).json({ error: "Item text cannot exceed 100 characters" });
+
+  try {
+    const result = await pool.query("UPDATE items SET text=$1 WHERE id=$2 RETURNING *;", [text, id]);
+    if (result.rowCount === 0) {
+      console.error(`Item ID '${id}' not found`);
+      return res.status(404).json({ error: `Item ID not found` });
+    }
+    res.sendStatus(200); // Resource successfully updated.
+  } catch (err) {
+    next(err);
+  }
 });
 
 
 app.delete("/api/items/:id", async (req, res, next) => {
-  const { id } = req.params;
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) return res.status(400).json({ error: "Invalid item ID" });
+
   try {
-    await db.query("DELETE FROM items WHERE id=$1;", [id]);
-    res.sendStatus(200); // Resource successfully deleted.
+    const result = await pool.query("DELETE FROM items WHERE id=$1;", [id]);
+
+    if (result.rowCount === 0) {
+      console.error(`Couldn't delete item '${id}'`);
+      return res.status(404).json({ error: "Item ID not found" });
+    }
+
+    res.sendStatus(204);
   } catch (err) {
     next(err);
   }
